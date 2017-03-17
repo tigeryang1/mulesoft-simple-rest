@@ -1,0 +1,76 @@
+#%RAML 0.8
+---
+title: Remote Vending API
+version: v1.0
+baseUri: http://remote-vending/api
+mediaType: application/json
+schemas:
+  - getclients: |
+     {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "type" : "object",
+        "properties" : {
+          "employees" : 
+          {
+            "type" : "array",
+            "items" : 
+            {
+              "type" : "object",
+                "properties" : {
+                  "first_name" : {
+                    "type" : "string"
+                  },
+                  "last_name" : {
+                    "type" : "string"
+                  }
+                }
+            }
+          }
+        }    
+      }
+  - getcsvclients: |
+     {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type" : "object"
+     }
+documentation:
+  - title: Introduction
+    content: |
+      API to manage the sales and replenishments of stock items and floats in our vending machines.
+resourceTypes: 
+  - base:
+      get:
+        responses:
+          200:
+            body:
+              schema: get<<resourcePathName>> # e.g. get-machines
+  - basecsv:
+      get:
+        responses:
+          200:
+            body:
+              application/csv:
+                schema: get<<resourcePathName>>
+  - collection:
+      type: base
+      post:
+        body:
+          schema: post<<resourcePathName | !singularize>>  # e.g. post-sale
+        responses:
+          201:
+            description: Created!
+            headers:
+              Location:
+                description: uri of new resource
+                type: string
+                required: true  
+/clients:
+  type: base
+  get:
+    responses:
+      200
+/csvclients:
+  type: basecsv
+  get:
+    responses:
+      200
